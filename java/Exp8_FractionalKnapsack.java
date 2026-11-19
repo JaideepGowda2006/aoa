@@ -1,19 +1,14 @@
-// Experiment 8: Implementation of Fractional Knapsack using Greedy Algorithm
-// Items can be broken down into fractions to maximize profit
+// Exp 8: Fractional Knapsack using Greedy Algorithm
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class Exp8_FractionalKnapsack {
 
-    // class representing each item
     static class Item {
         int id;
-        double weight;
-        double value;
-        double ratio; // value per unit weight
+        double weight, value, ratio;
 
-        public Item(int id, double value, double weight) {
+        Item(int id, double value, double weight) {
             this.id = id;
             this.value = value;
             this.weight = weight;
@@ -21,68 +16,53 @@ public class Exp8_FractionalKnapsack {
         }
     }
 
-    public static double getMaxValue(Item[] items, double capacity) {
-        // sort items by ratio in descending order
-        Arrays.sort(items, new Comparator<Item>() {
-            @Override
-            public int compare(Item a, Item b) {
-                return Double.compare(b.ratio, a.ratio);
-            }
-        });
+    static double fractionalKnapsack(Item[] items, double capacity) {
+        // sort by ratio in descending order
+        Arrays.sort(items, (a, b) -> Double.compare(b.ratio, a.ratio));
 
-        double currentWeight = 0;
         double totalProfit = 0;
+        double remCapacity = capacity;
 
-        System.out.println("Items selected:");
+        System.out.println("Selected items:");
         for (Item item : items) {
-            // if full item can fit
-            if (currentWeight + item.weight <= capacity) {
-                currentWeight += item.weight;
+            if (remCapacity == 0) break;
+
+            if (item.weight <= remCapacity) {
+                // take whole item
+                remCapacity -= item.weight;
                 totalProfit += item.value;
-                System.out.println("- Item " + item.id + ": took 100% (Weight: " + item.weight + ", Value: " + item.value + ")");
-            } 
-            // if only a fraction of item can fit
-            else {
-                double remaining = capacity - currentWeight;
-                if (remaining > 0) {
-                    double fraction = remaining / item.weight;
-                    totalProfit += item.value * fraction;
-                    currentWeight += remaining;
-                    System.out.println("- Item " + item.id + ": took " + String.format("%.2f", fraction * 100) 
-                                       + "% (Weight: " + remaining + ", Value: " + String.format("%.2f", item.value * fraction) + ")");
-                }
-                break; // knapsack is now completely full
+                System.out.printf("Item %d: 100%% (Weight: %.1f, Profit: %.1f)\n", item.id, item.weight, item.value);
+            } else {
+                // take fraction
+                double fraction = remCapacity / item.weight;
+                totalProfit += item.value * fraction;
+                System.out.printf("Item %d: %.1f%% (Weight: %.1f, Profit: %.1f)\n", item.id, fraction * 100, remCapacity, item.value * fraction);
+                remCapacity = 0;
             }
         }
-
         return totalProfit;
     }
 
     public static void main(String[] args) {
-        // sample items: {Item(id, value, weight)}
         Item[] items = {
             new Item(1, 60, 10),
             new Item(2, 100, 20),
             new Item(3, 120, 30)
         };
-
         double capacity = 50;
 
-        System.out.println("--- Fractional Knapsack ---");
         System.out.println("Knapsack Capacity: " + capacity);
 
         long startTime = System.nanoTime();
 
-        double maxProfit = getMaxValue(items, capacity);
+        double maxProfit = fractionalKnapsack(items, capacity);
 
         long endTime = System.nanoTime();
-        long timeTaken = endTime - startTime;
 
-        System.out.println("\nMaximum Profit Earned = " + maxProfit);
+        System.out.printf("Total Max Profit: %.2f\n", maxProfit);
 
-        System.out.println("\n--- Complexity & Execution Time ---");
-        System.out.println("Execution Time: " + timeTaken + " ns (" + (timeTaken / 1_000_000.0) + " ms)");
-        System.out.println("Time Complexity: O(n log n) [dominated by sorting step]");
-        System.out.println("Space Complexity: O(1) or O(n) [depending on sorting algorithm used]");
+        System.out.println("\nExecution Time: " + (endTime - startTime) + " ns");
+        System.out.println("Time Complexity: O(n log n)");
+        System.out.println("Space Complexity: O(1)");
     }
 }

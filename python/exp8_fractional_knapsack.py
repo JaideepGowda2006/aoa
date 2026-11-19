@@ -1,5 +1,4 @@
-# Experiment 8: Implementation of Fractional Knapsack using Greedy Algorithm
-# Items can be divided into fractions to maximize profit
+# Exp 8: Fractional Knapsack using Greedy Algorithm
 
 import time
 
@@ -8,32 +7,30 @@ class Item:
         self.id = item_id
         self.value = value
         self.weight = weight
-        self.ratio = value / weight  # profit per unit weight
+        self.ratio = value / weight
 
 def fractional_knapsack(items, capacity):
-    # sort items by ratio in descending order
+    # sort by ratio descending
     items.sort(key=lambda x: x.ratio, reverse=True)
 
-    current_weight = 0.0
     total_profit = 0.0
+    rem_capacity = capacity
 
-    print("Items selected:")
+    print("Selected items:")
     for item in items:
-        # if entire item can be taken
-        if current_weight + item.weight <= capacity:
-            current_weight += item.weight
+        if rem_capacity == 0:
+            break
+
+        if item.weight <= rem_capacity:
+            rem_capacity -= item.weight
             total_profit += item.value
-            print(f"- Item {item.id}: took 100% (Weight: {item.weight}, Value: {item.value})")
-        # take fraction of item
+            print(f"Item {item.id}: 100% (Weight: {item.weight}, Profit: {item.value})")
         else:
-            remaining = capacity - current_weight
-            if remaining > 0:
-                fraction = remaining / item.weight
-                profit_gained = item.value * fraction
-                total_profit += profit_gained
-                current_weight += remaining
-                print(f"- Item {item.id}: took {fraction * 100:.2f}% (Weight: {remaining}, Value: {profit_gained:.2f})")
-            break  # knapsack is full
+            fraction = rem_capacity / item.weight
+            profit = item.value * fraction
+            total_profit += profit
+            print(f"Item {item.id}: {fraction * 100:.1f}% (Weight: {rem_capacity}, Profit: {profit:.1f})")
+            rem_capacity = 0
 
     return total_profit
 
@@ -45,7 +42,6 @@ if __name__ == "__main__":
     ]
     capacity = 50.0
 
-    print("--- Fractional Knapsack ---")
     print(f"Knapsack Capacity: {capacity}")
 
     start_time = time.perf_counter()
@@ -53,11 +49,8 @@ if __name__ == "__main__":
     max_profit = fractional_knapsack(items, capacity)
 
     end_time = time.perf_counter()
-    elapsed_ms = (end_time - start_time) * 1000
 
-    print(f"\nMaximum Profit Earned = {max_profit:.2f}")
-
-    print("\n--- Complexity & Execution Time ---")
-    print(f"Code Execution Time: {elapsed_ms:.4f} ms")
-    print("Time Complexity: O(n log n) [due to sorting by value/weight ratio]")
-    print("Space Complexity: O(1) or O(n) [depending on sort implementation]")
+    print(f"Total Max Profit: {max_profit:.2f}")
+    print(f"\nExecution Time: {(end_time - start_time) * 1e9:.0f} ns")
+    print("Time Complexity: O(n log n)")
+    print("Space Complexity: O(1)")

@@ -1,5 +1,4 @@
-# Experiment 9: Implementation of Job Sequencing with Deadlines using Greedy Algorithm
-# Maximize profit by assigning jobs to time slots before their deadlines
+# Exp 9: Job Sequencing with Deadlines using Greedy Algorithm
 
 import time
 
@@ -10,31 +9,24 @@ class Job:
         self.profit = profit
 
 def job_sequencing(jobs):
-    # Step 1: Sort jobs descending by profit
+    # sort jobs by profit descending
     jobs.sort(key=lambda x: x.profit, reverse=True)
 
-    # Step 2: Find max deadline to size our time slots
-    max_deadline = max(job.deadline for job in jobs)
-
-    # time slot array (1-indexed for clarity)
-    slot = [None] * (max_deadline + 1)
+    max_deadline = max(j.deadline for j in jobs)
+    slots = [None] * (max_deadline + 1)
     total_profit = 0
-    jobs_done = 0
 
-    # Step 3: For each job, find latest free slot before its deadline
-    for job in jobs:
-        for t in range(min(max_deadline, job.deadline), 0, -1):
-            if slot[t] is None:
-                slot[t] = job.id
-                total_profit += job.profit
-                jobs_done += 1
+    # find latest free slot <= deadline
+    for j in jobs:
+        for t in range(min(max_deadline, j.deadline), 0, -1):
+            if slots[t] is None:
+                slots[t] = j.id
+                total_profit += j.profit
                 break
 
-    # print the scheduled jobs
-    scheduled = [slot[t] for t in range(1, max_deadline + 1) if slot[t] is not None]
-    print("Scheduled Jobs order:", " ".join(scheduled))
-    print(f"Total Jobs Done: {jobs_done}")
-    print(f"Total Max Profit: {total_profit}")
+    scheduled = [slots[t] for t in range(1, max_deadline + 1) if slots[t] is not None]
+    print("Scheduled Jobs:", " ".join(scheduled))
+    print(f"Total Profit: {total_profit}")
 
 if __name__ == "__main__":
     jobs = [
@@ -45,20 +37,11 @@ if __name__ == "__main__":
         Job('E', 3, 15)
     ]
 
-    print("--- Job Sequencing with Deadlines ---")
-    print("Given Jobs:")
-    for j in jobs:
-        print(f"Job {j.id} -> Deadline: {j.deadline}, Profit: {j.profit}")
-    print()
-
     start_time = time.perf_counter()
 
     job_sequencing(jobs)
 
     end_time = time.perf_counter()
-    elapsed_ms = (end_time - start_time) * 1000
-
-    print("\n--- Complexity & Execution Time ---")
-    print(f"Code Execution Time: {elapsed_ms:.4f} ms")
-    print("Time Complexity: O(n^2)  [or O(n log n + n * d) where d is max deadline]")
-    print("Space Complexity: O(d)   [to store scheduled slots]")
+    print(f"\nExecution Time: {(end_time - start_time) * 1e9:.0f} ns")
+    print("Time Complexity: O(n^2)")
+    print("Space Complexity: O(d)")

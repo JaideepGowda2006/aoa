@@ -1,59 +1,40 @@
-// Experiment 1: Implementation and Analysis of Recurrence Relations using the Recursion Tree Method
-// Example recurrence: T(n) = 2T(n/2) + n  (Merge Sort type)
+// Exp 1: Recursion Tree Method
+// Example: T(n) = 2T(n/2) + n
 
 public class Exp1_RecursionTree {
 
-    // function to simulate and display the recursion tree
-    public static void solveRecursionTree(int n, int a, int b) {
-        System.out.println("--- Recursion Tree Simulation ---");
+    static void solveRecursionTree(int n, int a, int b) {
         System.out.println("Recurrence: T(n) = " + a + "T(n/" + b + ") + n");
-        System.out.println("Initial problem size (n): " + n);
-        System.out.println();
+        System.out.println("Problem Size: " + n);
 
         int level = 0;
-        double currentSize = n;
-        long nodesAtLevel = 1;
-        double totalCost = 0;
+        int currentN = n;
+        int nodes = 1;
+        int totalCost = 0;
 
-        // loop till problem size becomes 1 (base condition)
-        while (currentSize >= 1) {
-            // cost at each node is equal to its problem size
-            double costPerNode = currentSize;
-            double levelCost = nodesAtLevel * costPerNode;
+        // calculate cost at each level
+        while (currentN >= 1) {
+            int levelCost = nodes * currentN;
             totalCost += levelCost;
+            System.out.println("Level " + level + ": " + nodes + " nodes, size = " + currentN + ", cost = " + levelCost);
 
-            System.out.println("Level " + level + ": " + nodesAtLevel + " node(s), size = " 
-                               + String.format("%.1f", currentSize) 
-                               + ", cost at this level = " + String.format("%.1f", levelCost));
-
-            // update for next level
-            currentSize = currentSize / b;
-            nodesAtLevel = nodesAtLevel * a;
+            currentN = currentN / b;
+            nodes = nodes * a;
             level++;
         }
 
-        System.out.println("\nTree Height (Depth) = " + (level - 1));
-        System.out.println("Total Work / Cost calculated = " + totalCost);
+        System.out.println("Tree Height: " + (level - 1));
+        System.out.println("Total Cost: " + totalCost);
     }
 
     public static void main(String[] args) {
-        // start time
         long startTime = System.nanoTime();
 
-        // problem parameters: n=16, a=2, b=2
-        int n = 16;
-        int a = 2;
-        int b = 2;
+        solveRecursionTree(16, 2, 2);
 
-        solveRecursionTree(n, a, b);
-
-        // end time
         long endTime = System.nanoTime();
-        long timeTaken = endTime - startTime;
-
-        System.out.println("\n--- Performance & Complexity ---");
-        System.out.println("Time taken by code: " + timeTaken + " ns (" + (timeTaken / 1_000_000.0) + " ms)");
-        System.out.println("Time Complexity: O(n log n)  [for T(n) = 2T(n/2) + n]");
-        System.out.println("Space Complexity: O(log n)  [recursion stack height]");
+        System.out.println("\nExecution Time: " + (endTime - startTime) + " ns");
+        System.out.println("Time Complexity: O(n log n)");
+        System.out.println("Space Complexity: O(log n)");
     }
 }
